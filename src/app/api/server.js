@@ -3,7 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 
-
+const database = require('./config/database');
 
 const app = express();
 const server = http.createServer(app);
