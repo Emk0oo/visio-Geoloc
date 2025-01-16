@@ -5,6 +5,8 @@ const socket = new WebSocket("ws://localhost:8080");
 let username;
 
 function joinChat() {
+    navigator.geolocation.getCurrentPosition(success, error, options);
+
   username = document.getElementById("username").value.trim();
   if (username) {
     loginContainer.style.display = "none";
@@ -88,3 +90,23 @@ document.getElementById("username").addEventListener("keypress", (e) => {
     joinChat();
   }
 });
+
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
+};
+
+function success(pos) {
+  const crd = pos.coords;
+
+  console.log("Your current position is:");
+  console.log(`Latitude : ${crd.latitude}`);
+  console.log(`Longitude: ${crd.longitude}`);
+  console.log(`Coords : ${crd.latitude} ${crd.longitude}`);
+  console.log(`More or less ${crd.accuracy} meters.`);
+}
+
+function error(err) {
+  console.warn(`ERROR(${err.code}): ${err.message}`);
+}
