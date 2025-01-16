@@ -4,12 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat WebSocket</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <link rel="stylesheet" href="./style/index.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script type="module" src="./js/chat.js" defer></script>
+    <!-- Chargez les scripts locaux avant l'API Google Maps -->
     <script type="module" src="./js/geolocalisation.js" defer></script>
-</head>
+    <script type="module" src="./js/chat.js" defer></script>
+    <script type="module" src="./js/initMap.js" defer></script>
+    <!-- API Google Maps -->
+    <!-- <script
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoSDEVlv0gzvS4AYePhlwVHFGuatnD0ZU&callback=initMap&libraries=marker"
+    ></script> -->
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoSDEVlv0gzvS4AYePhlwVHFGuatnD0ZU&callback=initMap&v=weekly&libraries=marker"
+      defer
+    ></script>
+  </head>
   <body>
     <h1>Visio Geoloc</h1>
 
@@ -17,7 +32,11 @@
       <!-- Section Chat (Gauche) -->
       <div class="chat-section">
         <div class="login-container" id="loginContainer">
-          <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" />
+          <input
+            type="text"
+            id="username"
+            placeholder="Entrez votre nom d'utilisateur"
+          />
           <button onclick="joinChat()">Rejoindre le chat</button>
         </div>
 

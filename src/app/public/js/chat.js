@@ -1,4 +1,4 @@
-import { getUserLocalisation } from './geolocalisation.js';
+import { getUserLocalisation } from "./geolocalisation.js";
 
 const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
@@ -7,8 +7,6 @@ const socket = new WebSocket("ws://localhost:8080");
 let username;
 
 function joinChat() {
-  // navigator.geolocation.getCurrentPosition(success, error, options);
-  getUserLocalisation();
   username = document.getElementById("username").value.trim();
   if (username) {
     loginContainer.style.display = "none";
@@ -25,13 +23,11 @@ function joinChat() {
 
 window.joinChat = joinChat;
 
-
 socket.onopen = () => {
   console.log("Connecté au serveur WebSocket");
   addSystemMessage("✓ Connecté au chat");
 };
 
-// Remplacez la partie du socket.onmessage par celle-ci :
 socket.onmessage = (event) => {
   const now = new Date();
   const timestamp = `${String(now.getHours()).padStart(2, "0")}:${String(
@@ -39,10 +35,8 @@ socket.onmessage = (event) => {
   ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
 
   let messageData = event.data;
-  let isOwnMessage = false;
 
   try {
-    // Essayer de parser le message comme JSON
     const data = JSON.parse(messageData);
     if (data.type === "connection") {
       addSystemMessage(`${data.username} a rejoint le chat`);
@@ -50,13 +44,10 @@ socket.onmessage = (event) => {
       addSystemMessage(`${data.username} a quitté le chat`);
     }
   } catch {
-    // Si ce n'est pas du JSON, c'est un message normal
-    isOwnMessage = messageData.startsWith(`${username}:`);
     addMessage(`[${timestamp}] ${messageData}`);
   }
 };
 
-// Et ajoutez cette ligne au début du script pour s'assurer que le son est chargé :
 socket.onclose = () => {
   addSystemMessage("× Déconnecté du chat");
 };
