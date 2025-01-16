@@ -6,13 +6,13 @@ async function initMap() {
     console.log(userCoord);
   
     const map = new google.maps.Map(document.getElementById("map"), {
-        center: userCoord, // 
-        zoom: 9,
-        mapId: "be31cd6f936aef12", // Remplacez par votre Map ID
+        center: userCoord, //centre sur l'utilisateurs
+        zoom: 7,
+        mapId: "be31cd6f936aef12", //Map ID google maps console
       });
   
     new google.maps.marker.AdvancedMarkerElement({
-      position: userCoord,
+      position: userCoord, // ajoute marqueur sur l'utilisateur
       map: map,
       title: "Votre position actuelle",
     });

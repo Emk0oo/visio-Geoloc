@@ -16,29 +16,6 @@ export async function getUserLocalisation() {
   });
 }
 
-export async function initMap() {
-  try {
-    const userCoord = await getUserLocalisation();
-    console.log(userCoord);
-
-    const map = new google.maps.Map(document.getElementById("map"), {
-      center: userCoord,
-      zoom: 7,
-    });
-
-    new google.maps.marker.AdvancedMarkerElement({
-      position: userCoord,
-      map: map,
-      title: "Votre position actuelle",
-    });    
-  } catch (err) {
-    console.error("Erreur lors de la récupération de la localisation :", err);
-  }
-}
-
-// Ajoutez initMap au contexte global
-window.initMap = initMap;
-
 const options = {
   enableHighAccuracy: true,
   timeout: 5000,
