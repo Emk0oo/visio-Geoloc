@@ -4,29 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="./style/index.css" />
-    <script src="./js/chat.js" defer></script>
-  </head>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./js/chat.js" defer></script>
+    <script type="module" src="./js/geolocalisation.js" defer></script>
+</head>
   <body>
     <h1>Visio Geoloc</h1>
 
-    <div class="login-container" id="loginContainer">
-      <input
-        type="text"
-        id="username"
-        placeholder="Entrez votre nom d'utilisateur"
-      />
-      <button onclick="joinChat()">Rejoindre le chat</button>
+    <div class="container">
+      <!-- Section Chat (Gauche) -->
+      <div class="chat-section">
+        <div class="login-container" id="loginContainer">
+          <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" />
+          <button onclick="joinChat()">Rejoindre le chat</button>
+        </div>
+
+        <div id="chatbox"></div>
+
+        <div class="input-container">
+          <input type="text" id="message" placeholder="Écrivez un message..." />
+          <button onclick="sendMessage()">Envoyer</button>
+        </div>
+      </div>
+
+      <!-- Section Localisation (Droite) -->
+      <div class="location-section">
+        <div class="map-container">
+          <div id="map"></div>
+        </div>
+        <div class="users-list">
+          <h3>Utilisateurs connectés</h3>
+          <div id="usersList"></div>
+        </div>
+      </div>
     </div>
-
-    <div id="chatbox"></div>
-
-    <div class="input-container">
-      <input type="text" id="message" placeholder="Écrivez un message..." />
-      <button onclick="sendMessage()">Envoyer</button>
-    </div>
-
-    <script>
-    </script>
   </body>
 </html>

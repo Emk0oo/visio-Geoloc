@@ -1,3 +1,5 @@
+import { getUserLocalisation } from './geolocalisation.js';
+
 const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
 const loginContainer = document.getElementById("loginContainer");
@@ -5,8 +7,8 @@ const socket = new WebSocket("ws://localhost:8080");
 let username;
 
 function joinChat() {
-    navigator.geolocation.getCurrentPosition(success, error, options);
-
+  // navigator.geolocation.getCurrentPosition(success, error, options);
+  getUserLocalisation();
   username = document.getElementById("username").value.trim();
   if (username) {
     loginContainer.style.display = "none";
@@ -20,6 +22,9 @@ function joinChat() {
     );
   }
 }
+
+window.joinChat = joinChat;
+
 
 socket.onopen = () => {
   console.log("Connecté au serveur WebSocket");
@@ -79,6 +84,8 @@ function sendMessage() {
   }
 }
 
+window.sendMessage = sendMessage;
+
 messageInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     sendMessage();
@@ -90,23 +97,3 @@ document.getElementById("username").addEventListener("keypress", (e) => {
     joinChat();
   }
 });
-
-const options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0,
-};
-
-function success(pos) {
-  const crd = pos.coords;
-
-  console.log("Your current position is:");
-  console.log(`Latitude : ${crd.latitude}`);
-  console.log(`Longitude: ${crd.longitude}`);
-  console.log(`Coords : ${crd.latitude} ${crd.longitude}`);
-  console.log(`More or less ${crd.accuracy} meters.`);
-}
-
-function error(err) {
-  console.warn(`ERROR(${err.code}): ${err.message}`);
-}
