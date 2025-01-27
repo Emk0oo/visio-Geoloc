@@ -38,103 +38,123 @@ wss.on("connection", (ws) => {
   console.log("Nouveau client connecté");
 
   // Dans la section wss.on('connection', (ws) => { ... })
-ws.on("message", async (message) => {
+  ws.on("message", async (message) => {
+    try {
+      const data = JSON.parse(message);
+
+      // Début de la modification
+      if (data.type === "message") {
+        // Ajouter le timestamp si absent
+        data.timestamp = data.timestamp || new Date().toISOString();
+
+        // Diffuser à tous les clients
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+          }
+        });
+        return; // Sortir de la fonction après traitement
+      }
+      // Fin de la modification
+
+      if (data.type === "position") {
+        await database.execute(
+          "UPDATE users SET latitude = ?, longitude = ? WHERE id = ?",
+          [data.latitude, data.longitude, data.userId]
+        );
+
+        wss.clients.forEach((client) => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(
+              JSON.stringify({
+                type: "position_update",
+                userId: data.userId,
+                latitude: data.latitude,
+                longitude: data.longitude,
+              })
+            );
+          }
+        });
+      }
+
+      // Ajouter cette partie pour lier l'userId à la connexion WebSocket
+      if (data.type === "user_connected") {
+        ws.userId = data.userId;
+      }
+    } catch (error) {
+      console.error("Erreur traitement message:", error);
+    }
+  });
+
+  // 1. Modification du gestionnaire de déconnexion WebSocket
+ws.on('close', async () => {
   try {
-    const data = JSON.parse(message);
+    if (!ws.userId) return;
 
-    // Début de la modification
-    if (data.type === "message") {
-      // Ajouter le timestamp si absent
-      data.timestamp = data.timestamp || new Date().toISOString();
-      
-      // Diffuser à tous les clients
-      wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(data));
-        }
-      });
-      return; // Sortir de la fonction après traitement
-    }
-    // Fin de la modification
+    // Mettre à jour le statut IMMÉDIATEMENT
+    await database.execute(
+      "UPDATE users SET isConnected = 0, last_activity = NOW() WHERE id = ?", 
+      [ws.userId]
+    );
 
-    if (data.type === "position") {
-      await database.execute(
-        "UPDATE users SET latitude = ?, longitude = ? WHERE id = ?",
-        [data.latitude, data.longitude, data.userId]
-      );
+    // Récupérer le username après la mise à jour
+    const [user] = await database.execute(
+      "SELECT username FROM users WHERE id = ?", 
+      [ws.userId]
+    );
 
-      wss.clients.forEach(client => {
-        if (client !== ws && client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({
-            type: "position_update",
-            userId: data.userId,
-            latitude: data.latitude,
-            longitude: data.longitude
-          }));
-        }
-      });
-    }
-
-    // Ajouter cette partie pour lier l'userId à la connexion WebSocket
-    if (data.type === "user_connected") {
-      ws.userId = data.userId;
-    }
+    // Diffuser UNE SEULE notification
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN && client !== ws) {
+        client.send(JSON.stringify({
+          type: "user_disconnected",
+          userId: ws.userId,
+          username: user[0]?.username || `Utilisateur ${ws.userId}`
+        }));
+      }
+    });
 
   } catch (error) {
-    console.error("Erreur traitement message:", error);
+    console.error("Erreur déconnexion:", error);
   }
 });
 
-  ws.on("close", async () => {
-    try {
-      // Mettre à jour le statut de connexion
-      await database.execute("UPDATE users SET isConnected = 0 WHERE id = ?", [
-        ws.userId,
-      ]);
 
-      // Notifier les autres clients
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(
-            JSON.stringify({
-              type: "user_disconnected",
-              userId: ws.userId,
-            })
-          );
-        }
-      });
-    } catch (error) {
-      console.error("Erreur déconnexion:", error);
-    }
-  });
 });
 
-// Modifiez l'intervalle de vérification (toutes les 10 secondes au lieu de 5 minutes)
+// 2. Intervalle de vérification modifié
 setInterval(async () => {
   try {
+    // Ne traite que les utilisateurs encore connectés
+    const [users] = await database.execute(
+      `SELECT id, username 
+       FROM users 
+       WHERE last_activity < NOW() - INTERVAL 15 SECOND 
+       AND isConnected = 1`
+    );
+
+    // Mettre à jour et notifier en une transaction
     await database.execute(
-      `UPDATE users SET isConnected = 0 
-       WHERE last_activity < NOW() - INTERVAL 15 SECOND`
+      "UPDATE users SET isConnected = 0 WHERE id IN (?)", 
+      [users.map(u => u.id)]
     );
-    
-    // Notifier les déconnexions
-    const [inactiveUsers] = await database.execute(
-      "SELECT id FROM users WHERE isConnected = 0"
-    );
-    
-    inactiveUsers.forEach(user => {
+
+    users.forEach(user => {
       wss.clients.forEach(client => {
-        client.send(JSON.stringify({
-          type: "user_disconnected",
-          userId: user.id
-        }));
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({
+            type: "user_disconnected",
+            userId: user.id,
+            username: user.username
+          }));
+        }
       });
     });
 
   } catch (error) {
     console.error("Erreur vérification connexions:", error);
   }
-}, 10000); // 10 secondes
+}, 15000); // Augmenté à 15 secondes
 
 server.listen(8080, () => {
   console.log("Serveur en écoute sur port 8080");

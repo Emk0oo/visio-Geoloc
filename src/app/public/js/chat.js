@@ -82,6 +82,7 @@ socket.onopen = () => {
   addSystemMessage("✓ Connecté au chat");
   updateConnectedUsers();
 };
+const dejaTraite = new Set();
 
 socket.onmessage = (event) => {
   try {
@@ -95,7 +96,14 @@ socket.onmessage = (event) => {
     } else if (data.type === "user_connected") {
       addSystemMessage(`${data.username} a rejoint le chat`);
     } else if (data.type === "user_disconnected") {
-      addSystemMessage(`${data.username} a quitté le chat`);
+      if (!dejaTraite.has(data.userId)) {
+        dejaTraite.add(data.userId);
+        const username = data.username || `Utilisateur ${data.userId}`;
+        addSystemMessage(`${username} a quitté le chat`);
+        
+        // Réinitialiser après 1 minute
+        setTimeout(() => dejaTraite.delete(data.userId), 60000);
+      }
     }
   } catch (error) {
     console.error("Erreur traitement message:", error);
@@ -177,8 +185,13 @@ socket.onmessage = (event) => {
       addSystemMessage(`${data.username} a rejoint le chat`);
       updateConnectedUsers(); // Actualiser la liste des marqueurs
     } else if (data.type === "user_disconnected") {
-      addSystemMessage(`${data.username} a quitté le chat`);
-      updateConnectedUsers(); // Actualiser la liste des marqueurs
+      const username = data.username || `Utilisateur ${data.userId}`;
+      addSystemMessage(`${username} a quitté le chat`);
+
+      // Supprimer le marqueur immédiatement
+      if (window.userMarkers && data.userId) {
+        delete window.userMarkers[data.userId];
+      }
     }
   } catch (error) {
     console.error("Erreur traitement message:", error);
