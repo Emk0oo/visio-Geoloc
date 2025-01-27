@@ -80,6 +80,7 @@ window.joinChat = joinChat;
 socket.onopen = () => {
   console.log("Connecté au serveur WebSocket");
   addSystemMessage("✓ Connecté au chat");
+  updateConnectedUsers();
 };
 
 socket.onmessage = (event) => {
@@ -129,9 +130,9 @@ function sendMessage() {
       userId: userId,
       username: username,
       content: message,
-      timestamp: new Date().toISOString() // Assure un format cohérent
+      timestamp: new Date().toISOString(), // Assure un format cohérent
     });
-    
+
     // Ajouter une gestion d'erreur
     try {
       if (socket.readyState === WebSocket.OPEN) {
@@ -152,23 +153,70 @@ window.sendMessage = sendMessage;
 // Ajouter en haut du fichier
 function formatTimestamp(isoString) {
   const date = new Date(isoString);
-  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  return `${date.getHours().toString().padStart(2, "0")}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 // Puis modifier le handler de message :
+// Modifiez le gestionnaire de message WebSocket
 socket.onmessage = (event) => {
   try {
     const data = JSON.parse(event.data);
 
     if (data.type === "message") {
-      const time = formatTimestamp(data.timestamp); // Utilise la nouvelle fonction
+      const time = formatTimestamp(data.timestamp);
       addMessage(`[${time}] ${data.username}: ${data.content}`);
+    } else if (data.type === "position_update") {
+      // Appel à la fonction de mise à jour de la carte
+      if (window.handlePositionUpdate) {
+        window.handlePositionUpdate(data.userId, data.latitude, data.longitude);
+      }
+    } else if (data.type === "user_connected") {
+      addSystemMessage(`${data.username} a rejoint le chat`);
+      updateConnectedUsers(); // Actualiser la liste des marqueurs
+    } else if (data.type === "user_disconnected") {
+      addSystemMessage(`${data.username} a quitté le chat`);
+      updateConnectedUsers(); // Actualiser la liste des marqueurs
     }
-    // ... reste inchangé
   } catch (error) {
     console.error("Erreur traitement message:", error);
   }
 };
+
+// Ajoutez cette fonction pour mettre à jour la liste des utilisateurs
+async function updateConnectedUsers() {
+  try {
+    const response = await fetch(`${apiUrl}/api/users`);
+    if (!response.ok) throw new Error("Erreur réseau");
+
+    const users = await response.json();
+    const usersList = document.getElementById("usersList");
+
+    // Vider la liste actuelle
+    usersList.innerHTML = "";
+
+    // Créer les éléments de liste
+    users.forEach((user) => {
+      const userElement = document.createElement("div");
+      userElement.className = "user-item";
+      userElement.innerHTML = `
+        <span class="user-status"></span>
+        <span class="username">${user.username}</span>
+        <span class="user-location">${user.latitude.toFixed(
+          4
+        )}, ${user.longitude.toFixed(4)}</span>
+      `;
+      usersList.appendChild(userElement);
+    });
+  } catch (error) {
+    console.error("Erreur mise à jour utilisateurs:", error);
+  }
+}
+
+// Appeler la fonction régulièrement (toutes les 5 secondes)
+setInterval(updateConnectedUsers, 5000);
 
 messageInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {

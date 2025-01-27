@@ -40,26 +40,25 @@ init() {
   setInterval(() => this.cleanupUsers(), 300000);
 },
 
+// Modifiez la requête UPDATE pour inclure last_activity
 async updateUser(req, res) {
-    try {
-      const { id } = req.params;
-      const { latitude, longitude } = req.body;
+  try {
+    const { id } = req.params;
+    const { latitude, longitude } = req.body;
 
-      await database.execute(
-        "UPDATE users SET latitude = ?, longitude = ? WHERE id = ?",
-        [latitude, longitude, id]
-      );
+    await database.execute(
+      `UPDATE users 
+       SET latitude = ?, longitude = ?, last_activity = NOW() 
+       WHERE id = ?`,
+      [latitude, longitude, id]
+    );
 
-      res.status(200).json({
-        id,
-        latitude,
-        longitude,
-      });
-    } catch (error) {
-      console.error("Erreur mise à jour utilisateur:", error);
-      res.status(500).send("Erreur serveur");
-    }
-  },
+    res.status(200).json({ id, latitude, longitude });
+  } catch (error) {
+    console.error("Erreur mise à jour utilisateur:", error);
+    res.status(500).send("Erreur serveur");
+  }
+},
 
   async getAllUsers(req, res) {
     try {

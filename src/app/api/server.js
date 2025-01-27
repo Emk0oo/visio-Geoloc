@@ -109,6 +109,33 @@ ws.on("message", async (message) => {
   });
 });
 
+// Modifiez l'intervalle de vérification (toutes les 10 secondes au lieu de 5 minutes)
+setInterval(async () => {
+  try {
+    await database.execute(
+      `UPDATE users SET isConnected = 0 
+       WHERE last_activity < NOW() - INTERVAL 15 SECOND`
+    );
+    
+    // Notifier les déconnexions
+    const [inactiveUsers] = await database.execute(
+      "SELECT id FROM users WHERE isConnected = 0"
+    );
+    
+    inactiveUsers.forEach(user => {
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({
+          type: "user_disconnected",
+          userId: user.id
+        }));
+      });
+    });
+
+  } catch (error) {
+    console.error("Erreur vérification connexions:", error);
+  }
+}, 10000); // 10 secondes
+
 server.listen(8080, () => {
   console.log("Serveur en écoute sur port 8080");
 });
