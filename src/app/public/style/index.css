@@ -248,3 +248,65 @@ button:active {
         width: 100%;
     }
 }
+
+.video-section {
+    margin-top: 20px;
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+  }
+  
+  #startVideoCall {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  video {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    background: #000;
+    transform: scaleX(-1); /* Miroir pour la caméra frontale */
+  }
+  
+  #remoteVideos video {
+    transform: scaleX(1); /* Réinitialiser pour les vidéos distantes */
+  }
+
+  .video-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: #000;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  
+  #localVideo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  #remoteVideos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  #remoteVideos video {
+    width: calc(50% - 3px);
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+  }

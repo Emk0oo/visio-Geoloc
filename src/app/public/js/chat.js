@@ -1,4 +1,5 @@
 import { getUserLocalisation } from "./geolocalisation.js";
+import { VideoCallManager, setupVideoUI } from "./webrtc.js"; // Correction du nom d'import
 
 const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
@@ -68,6 +69,12 @@ async function joinChat() {
           maximumAge: 0,
         }
       );
+      const videoUI = setupVideoUI();
+      window.videoCallManager = new VideoCallManager(socket, userId, apiUrl);
+
+      // Ajouter la gestion du bouton d'arrêt
+      videoUI.startButton.onclick = () => videoCallManager.startVideoCall();
+      videoUI.stopButton.onclick = () => videoCallManager.stopVideoCall();
     } catch (error) {
       console.error("Erreur connexion:", error);
       alert("Échec de la connexion");
@@ -88,7 +95,7 @@ socket.onmessage = (event) => {
   try {
     const data = JSON.parse(event.data);
 
-    if (data.type === "message") {
+    if (!["offer", "answer", "ice_candidate"].includes(data.type)) {
       const time = new Date(data.timestamp).toLocaleTimeString();
       addMessage(`[${time}] ${data.username}: ${data.content}`);
     } else if (data.type === "position_update") {
@@ -100,7 +107,7 @@ socket.onmessage = (event) => {
         dejaTraite.add(data.userId);
         const username = data.username || `Utilisateur ${data.userId}`;
         addSystemMessage(`${username} a quitté le chat`);
-        
+
         // Réinitialiser après 1 minute
         setTimeout(() => dejaTraite.delete(data.userId), 60000);
       }
