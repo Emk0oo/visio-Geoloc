@@ -10,7 +10,6 @@
     />
     <link rel="stylesheet" href="./style/index.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Chargez les scripts locaux avant l'API Google Maps -->
     <script type="module" src="./js/geolocalisation.js" defer></script>
     <script type="module" src="./js/webrtc.js"></script>
     <script type="module" src="./js/chat.js" defer></script>
@@ -36,17 +35,7 @@
         </div>
 
         <div id="chatbox"></div>
-        <!-- Dans le body, après la section chat -->
-        <div class="video-controls">
-          <button id="startVideoCall">Démarrer l'appel</button>
-          <button id="stopVideoCall">Arrêter l'appel</button>
-        </div>
         
-        <div class="video-container">
-          <video id="localVideo" muted playsinline></video>
-          <div id="remoteVideos"></div>
-        </div>
-
         <div class="input-container">
           <input type="text" id="message" placeholder="Écrivez un message..." />
           <button onclick="sendMessage()">Envoyer</button>
@@ -62,6 +51,19 @@
           <h3>👥 Utilisateurs en ligne <span id="usersCount">(0)</span></h3>
           <div id="usersList"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Section Visio (En dessous) -->
+    <div class="video-section">
+      <div class="video-controls">
+        <button id="startVideoCall">Démarrer l'appel</button>
+        <button id="stopVideoCall">Arrêter l'appel</button>
+      </div>
+      
+      <div class="video-container">
+        <video id="localVideo" muted playsinline></video>
+        <div id="remoteVideos"></div>
       </div>
     </div>
   </body>
