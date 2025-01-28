@@ -11,7 +11,6 @@ let username;
 // Après la connexion WebSocket
 let userId;
 const apiUrl ="http://" + config.SERVER_IP + ":8080";
-console.log("API URL:", apiUrl);
 
 async function joinChat() {
   username = document.getElementById("username").value.trim();
@@ -256,6 +255,3 @@ document.getElementById("username").addEventListener("keypress", (e) => {
 socket.onerror = (error) => {
   console.error("Erreur WebSocket:", error.message, error.stack);
 };
-
-// Vérifier l'état de la connexion
-console.log("État WebSocket:", socket.readyState); // Doit retourner 1 (OPEN)

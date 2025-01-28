@@ -4,7 +4,6 @@ export async function getUserLocalisation() {
       (pos) => {
         const latitude = pos.coords.latitude;
         const longitude = pos.coords.longitude;
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
         resolve({ lat: latitude, lng: longitude });
       },
       (err) => {

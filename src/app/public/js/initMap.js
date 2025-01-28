@@ -12,7 +12,7 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
       center: userCoord,
       zoom: 12,
-      mapId: "be31cd6f936aef12",
+      mapId: config.map_id,
     });
 
     // Marqueur pour l'utilisateur local
