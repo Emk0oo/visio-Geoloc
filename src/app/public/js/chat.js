@@ -1,15 +1,17 @@
 import { getUserLocalisation } from "./geolocalisation.js";
 import { VideoCallManager, setupVideoUI } from "./webrtc.js"; // Correction du nom d'import
+import config from "./config.js"; // Correction ici
 
 const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
 const loginContainer = document.getElementById("loginContainer");
-const socket = new WebSocket("ws://localhost:8080");
+const socket = new WebSocket("ws://"+config.SERVER_IP + ":8080");
 let username;
 
 // Après la connexion WebSocket
 let userId;
-const apiUrl = "http://localhost:8080";
+const apiUrl ="http://" + config.SERVER_IP + ":8080";
+console.log("API URL:", apiUrl);
 
 async function joinChat() {
   username = document.getElementById("username").value.trim();
