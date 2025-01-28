@@ -1,5 +1,6 @@
 // initMap.js
 import { getUserLocalisation } from "./geolocalisation.js";
+import config from "./config.js";
 
 let map;
 let userMarkers = {}; // Stocke tous les marqueurs des utilisateurs
@@ -34,7 +35,7 @@ async function initMap() {
 async function updateConnectedUsers() {
   try {
     // Récupère la liste des utilisateurs connectés
-    const response = await fetch('http://localhost:8080/api/users');
+    const response = await fetch('http://'+ config.SERVER_IP + ':8080/api/users');
     const users = await response.json();
 
     // Met à jour les marqueurs
