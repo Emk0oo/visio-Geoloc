@@ -5,7 +5,7 @@ import config from "./config.js"; // Correction ici
 const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
 const loginContainer = document.getElementById("loginContainer");
-const socket = new WebSocket("ws://"+config.SERVER_IP + ":8080");
+const socket = new WebSocket("ws://"+config.SERVER_DOMAIN + ":" +config.SOCKET_PORT);
 let username;
 
 // Après la connexion WebSocket
