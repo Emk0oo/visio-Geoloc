@@ -6,13 +6,12 @@ const chatbox = document.getElementById("chatbox");
 const messageInput = document.getElementById("message");
 const loginContainer = document.getElementById("loginContainer");
 const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-const socket = new WebSocket(`${wsProtocol}://${config.SERVER_DOMAIN}:${config.SOCKET_PORT}`);
-let username;
+const socket = new WebSocket(`${wsProtocol}://${config.SERVER_DOMAIN}/ws`);
 
 // Après la connexion WebSocket
 let userId;
 const apiProtocol = window.location.protocol === "https:" ? "https" : "http";
-const apiUrl = `${apiProtocol}://31.207.35.177:8080`;
+const apiUrl = `${apiProtocol}://${config.SERVER_DOMAIN}`; 
 
 async function joinChat() {
   username = document.getElementById("username").value.trim();
