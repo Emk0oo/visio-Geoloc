@@ -71,25 +71,24 @@ Clonez le projet et installez les dépendances :
 git clone https://github.com/votre-repo/visio-geoloc.git
 cd visio-geoloc
 npm install
+```
 🔧 3. Configuration
 Créez un fichier .env en copiant .envExample et configurez les valeurs :
 
-bash
-
-Copier
+```bash
 cp .envExample .env
+```
 Modifiez les variables selon votre configuration :
 
-
-Copier
+```
 PORT=8080
 GOOGLE_MAPS_API_KEY=VOTRE_CLE_API
+```
 🏃‍♂️ Démarrer l'application
 🌐 1. Lancer le serveur
-bash
-
-Copier
-npm start
+```
+node server.js
+```
 Le serveur sera accessible sur http://localhost:8080.
 
 📌 2. Accéder à l'application
@@ -131,8 +130,7 @@ npm install
 Ajoutez une configuration Nginx pour rediriger le trafic vers Node.js :
 
 nginx
-
-Copier
+```
 server {
     listen 80;
     server_name votre-domaine.com;
@@ -146,32 +144,18 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 }
+```
 Redémarrez Nginx :
 
-bash
-
-Copier
+```
 sudo systemctl restart nginx
+```
 🛠️ Améliorations possibles
 Ajout d'un système d'authentification (OAuth, JWT).
 Stockage des sessions WebRTC pour la reprise des appels.
 Optimisation des performances WebSocket pour la gestion de nombreux utilisateurs.
 Compatibilité avec plus de navigateurs et mobiles.
-📩 Support & Contact
-Si vous avez des questions ou des problèmes, contactez-moi sur votre-email@example.com.
+
 
 🚀 Merci d'utiliser Visio-Geoloc ! 🎉
 
-markdown
-
-Copier
-
----
-
-### ✅ **Pourquoi ce README est utile ?**
-- **Clair et structuré** : Explique chaque partie du projet.
-- **Facile à suivre** : Les étapes d’installation et configuration sont détaillées.
-- **Explication technique** : Décrit les technologies et principes utilisés.
-- **Prêt pour la production** : Ajoute des conseils pour le déploiement.
-
-Tu peux maintenant utiliser ce fichier `README.md` pour documenter ton projet ! 🚀🚀🚀
