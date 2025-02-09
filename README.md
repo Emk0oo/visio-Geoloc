@@ -56,7 +56,7 @@ visio-Geoloc
 
 ```bash
 # Cloner le projet
-git clone [https://github.com/votre-repo/visio-geoloc.git]
+git clone https://github.com/Emk0oo/visio-Geoloc/
 cd visio-geoloc
 
 # Installer les dépendances
