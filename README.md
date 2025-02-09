@@ -69,11 +69,14 @@ npm install
    ```bash
    cp .envExample .env
     ```
-Configurer les variables d'environnement :
+2. **Configurer les variables d'environnement **:
  ```
 PORT=8080
 GOOGLE_MAPS_API_KEY=VOTRE_CLE_API
  ```
+
+3. **Ajouter le fichier SQL à votre machine pour créer la BDD ** !!!
+
 🏃‍♂️ Démarrer l'application
 🌐 Lancer le serveur
  ```bash
