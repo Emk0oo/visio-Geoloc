@@ -34,14 +34,22 @@ async function initMap() {
 
 async function updateConnectedUsers() {
   try {
+    // Détermine automatiquement le protocole HTTP ou HTTPS
+    const apiProtocol = window.location.protocol === "https:" ? "https" : "http";
+    
     // Récupère la liste des utilisateurs connectés
-    const response = await fetch('http://'+ config.SERVER_DOMAIN + ':8080/api/users');
+    const response = await fetch(`${apiProtocol}://${config.SERVER_DOMAIN}:8080/api/users`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const users = await response.json();
 
-    // Met à jour les marqueurs
+    // Met à jour les marqueurs sur la carte
     users.forEach(user => {
       const position = { lat: user.latitude, lng: user.longitude };
-      
+
       if (!userMarkers[user.id]) {
         // Crée un nouveau marqueur
         userMarkers[user.id] = new google.maps.marker.AdvancedMarkerElement({
@@ -56,11 +64,11 @@ async function updateConnectedUsers() {
       }
     });
 
-    // Supprime les marqueurs déconnectés
+    // Supprime les marqueurs des utilisateurs déconnectés
     Object.keys(userMarkers).forEach(key => {
       if (key !== 'me' && !users.some(u => u.id == key)) {
-        userMarkers[key].map = null;
-        delete userMarkers[key];
+        userMarkers[key].map = null;  // Retirer du DOM
+        delete userMarkers[key]; // Supprimer du tableau
       }
     });
 
@@ -68,7 +76,6 @@ async function updateConnectedUsers() {
     console.error("Error updating users:", error);
   }
 }
-
 // Gestion des mises à jour en temps réel
 window.handlePositionUpdate = (userId, lat, lng) => {
   if (userMarkers[userId]) {
